@@ -1,0 +1,35 @@
+[project]
+name = "fordeling-af-140-genoptraeningsplaner"
+version = "0.1.0"
+description = "Distributes §140 rehabilitation plans (GOP) to appropriate departments"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "httpx>=0.28.1",
+    "openpyxl>=3.1",
+    "python-dateutil>=2.9",
+    "kmd-nexus-client",
+    "sue",
+    "gadefortegnelsen",
+    "medcom-beskeder",
+    "datafordeler",
+    "odk-tools",
+    "automation-server-client",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.25",
+    "ruff>=0.9",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+markers = [
+    "integration: calls real external APIs",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
