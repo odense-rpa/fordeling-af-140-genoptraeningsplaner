@@ -1,7 +1,7 @@
 [project]
 name = "fordeling-af-140-genoptraeningsplaner"
 version = "0.1.0"
-description = "Distributes §140 rehabilitation plans (GOP) to appropriate departments"
+description = "Fordeler §140 genoptræningsplaner i Odense kommune"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
