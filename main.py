@@ -18,10 +18,10 @@ from odk_tools.reporting import report
 from odk_tools.tracking import Tracker
 from sue import SueClient
 
-from .diagnose_opslag import indlæs_diagnosekoder
-from .indlaes_borger import indlæs_borger
-from .indlaes_gop import indlæs_gop
-from .nexus_handlinger import (
+from fordeling_af_140_genoptraeningsplaner.diagnose_opslag import indlæs_diagnosekoder
+from fordeling_af_140_genoptraeningsplaner.indlaes_borger import indlæs_borger
+from fordeling_af_140_genoptraeningsplaner.indlaes_gop import indlæs_gop
+from fordeling_af_140_genoptraeningsplaner.nexus_handlinger import (
     afslut_ggop,
     hent_oplysninger_fra_nexus,
     opret_diagnoseskemaer,
@@ -29,7 +29,7 @@ from .nexus_handlinger import (
     opret_indsatser,
     tilføj_organisation,
 )
-from .placering import beslut_placering
+from fordeling_af_140_genoptraeningsplaner.placering import beslut_placering
 
 logger = logging.getLogger(__name__)
 

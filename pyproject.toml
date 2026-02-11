@@ -3,18 +3,18 @@ name = "fordeling-af-140-genoptraeningsplaner"
 version = "0.1.0"
 description = "Fordeler §140 genoptræningsplaner i Odense kommune"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.13"
 dependencies = [
+    "automation-server-client",
+    "datafordeler",
+    "gadefortegnelsen",
     "httpx>=0.28.1",
+    "kmd-nexus-client",
+    "medcom-beskeder",
+    "odk-tools",
     "openpyxl>=3.1",
     "python-dateutil>=2.9",
-    "kmd-nexus-client",
     "sue",
-    "gadefortegnelsen",
-    "medcom-beskeder",
-    "datafordeler",
-    "odk-tools",
-    "automation-server-client",
 ]
 
 [dependency-groups]
@@ -30,6 +30,11 @@ markers = [
     "integration: calls real external APIs",
 ]
 
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+[tool.uv.sources]
+gadefortegnelsen = { git = "https://github.com/odense-rpa/gadefortegnelsen.git" }
+datafordeler = { git = "https://github.com/odense-rpa/datafordeler.git" }
+medcom-beskeder = { git = "https://github.com/odense-rpa/medcom-beskeder.git" }
+odk-tools = { git = "https://github.com/odense-rpa/odk-tools.git" }
+automation-server-client = { git = "https://github.com/odense-rpa/automation-server-client.git" }
+kmd-nexus-client = { git = "https://github.com/odense-rpa/nexus-client.git" }
+sue = { git = "https://github.com/odense-rpa/sue.git" }
