@@ -38,7 +38,7 @@ def indlæs_gop(
         raise ValueError(f"MedCom besked med id {besked_id} ikke fundet")
 
     # 2. Fetch full message and decode XML
-    besked = nexus.medcom.hent_besked(besked_ref)
+    besked = nexus.medcom.hent_besked(besked_ref) or {} # Rettede her til default tom dict for at undgå NoneType fejl senere
     xml = nexus.medcom.dekoder_medcom_xml(besked)
     if xml is None:
         raise ValueError(f"Kunne ikke dekode MedCom XML for besked {besked_id}")

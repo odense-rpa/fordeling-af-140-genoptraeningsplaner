@@ -21,22 +21,39 @@ def indlæs_diagnosekoder(excel_path: str) -> list[dict]:
 
     # The sheet is transposed: each row is (Name, Value)
     # Name = diagnosis category, Value = search text
-    diagnosekoder = []
-    for row in rows:
-        if len(row) < 2:
-            continue
-        name = str(row[0]).strip() if row[0] else ""
-        value = str(row[1]).strip() if row[1] else ""
-        if name and value:
-            diagnosekoder.append(
-                {
-                    "Diagnose": name,
-                    "Sogetekst": value.lower(),
-                    "Laengde": len(value),
-                }
-            )
+    
 
-    diagnosekoder.sort(key=lambda d: d["Laengde"], reverse=True)
+    kategorier = []
+
+    for kategori in rows[0]:
+        if kategori:
+            kategorier.append(str(kategori).strip())
+
+    diagnosekoder = []
+
+    for row in rows[1:]:
+        for idx, kategori in enumerate(kategorier):
+            if idx < len(row):
+                value = row[idx]
+                if value:
+                    diagnosekoder.append(
+                        {
+                            "Diagnose": kategori,
+                            "Sogetekst": str(value).strip().lower(),
+                        }
+                    )
+        # name = str(row[0]).strip() if row[0] else ""
+        # value = str(row[1]).strip() if row[1] else ""
+        # if name and value:
+        #     diagnosekoder.append(
+        #         {
+        #             "Diagnose": name,
+        #             "Sogetekst": value.lower(),
+        #             "Laengde": len(value),
+        #         }
+        #     )
+
+    diagnosekoder.sort(key=lambda d: len(d["Sogetekst"]), reverse=True)
     return diagnosekoder
 
 
@@ -62,7 +79,7 @@ def find_diagnose_kategori(
     for dk in diagnosekoder:
         sogetekst = dk["Sogetekst"]
 
-        if dk["Laengde"] <= 3:
+        if len(sogetekst) <= 3:
             # Short search term: exact word match
             if sogetekst in alle_ord:
                 kategori = dk["Diagnose"]

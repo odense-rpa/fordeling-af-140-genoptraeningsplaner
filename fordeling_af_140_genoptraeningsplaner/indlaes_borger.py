@@ -17,7 +17,7 @@ def indlæs_borger(
     """
     # 1. Verify citizen lives in Odense (kommunekode 461)
     adresse = datafordeler.hent_aktiv_adresse(cpr)
-    kommunekode = adresse.get("CprAdresse", {}).get("cprKommunekode", "")
+    kommunekode = adresse.get("Adresseoplysninger", {}).get("CprAdresse", {}).get("cprKommunekode", "")
     try:
         if int(kommunekode) != 461:
             raise WorkItemError("Borgeren bor ikke i Odense kommune")

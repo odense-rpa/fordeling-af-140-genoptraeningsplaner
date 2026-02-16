@@ -10,6 +10,7 @@ from automation_server_client import (
     Credential,
     WorkItemError,
     WorkItemStatus,
+    Workqueue
 )
 from datafordeler import Datafordeler
 from gadefortegnelsen import Gadefortegnelsen
@@ -36,7 +37,7 @@ logger = logging.getLogger(__name__)
 PROCESS_NAME = "Fordeling af §140 genoptræningsplaner"
 
 
-async def populate_queue(workqueue, nexus: NexusClientManager):
+async def populate_queue(workqueue: Workqueue, nexus: NexusClientManager):
     """Fetch MedCom GOP activity list and add items to queue."""
     aktiviteter = nexus.aktivitetslister.hent_aktivitetsliste(
         "MedCom - Genoptræningsplaner", None, None, 5
@@ -48,18 +49,19 @@ async def populate_queue(workqueue, nexus: NexusClientManager):
 
     for aktivitet in aktiviteter:
         cpr = (
-            aktivitet.get("patients", {})
+            aktivitet.get("patients", {})[0]
             .get("patientIdentifier", {})
             .get("identifier", "")
             .replace("-", "")
         )
 
-        workqueue.add(
+        workqueue.add_item(
             {
                 "Id": aktivitet.get("id"),
                 "Cpr": cpr,
                 "Gop dato": aktivitet.get("date", ""),
-            }
+            },
+            cpr
         )
 
     logger.info(f"Tilføjede {len(aktiviteter)} aktiviteter til køen")
@@ -101,39 +103,39 @@ async def process_workqueue(
                 # 6. Decide placement and treatment form
                 item_data = await beslut_placering(item_data, sue)
 
-                # 7. Create pathways (only for almen)
-                if item_data["gop_type"] == "almen":
-                    opret_forløb(borger, nexus)
+                # # 7. Create pathways (only for almen)
+                # if item_data["gop_type"] == "almen":
+                #     opret_forløb(borger, nexus)
 
-                    # 8. Add organization
-                    tilføj_organisation(borger, item_data["organisation_navn"], nexus)
+                #     # 8. Add organization
+                #     tilføj_organisation(borger, item_data["organisation_navn"], nexus)
 
-                    # 9. Create interventions
-                    opret_indsatser(
-                        borger,
-                        item_data["behandlingsform"],
-                        item_data["organisation_navn"],
-                        item_data.get("gop_dato", ""),
-                        nexus,
-                    )
+                #     # 9. Create interventions
+                #     opret_indsatser(
+                #         borger,
+                #         item_data["behandlingsform"],
+                #         item_data["organisation_navn"],
+                #         item_data.get("gop_dato", ""),
+                #         nexus,
+                #     )
 
-                    # 10. Finalize GGOP
-                    afslut_ggop(
-                        borger,
-                        data["Id"],
-                        item_data["organisation_navn"],
-                        item_data.get("gop_dato", ""),
-                        nexus,
-                    )
+                #     # 10. Finalize GGOP
+                #     afslut_ggop(
+                #         borger,
+                #         data["Id"],
+                #         item_data["organisation_navn"],
+                #         item_data.get("gop_dato", ""),
+                #         nexus,
+                #     )
 
-                    # 11. Create diagnosis schemas
-                    opret_diagnoseskemaer(borger, item_data["diagnoser"], nexus)
+                #     # 11. Create diagnosis schemas
+                #     opret_diagnoseskemaer(borger, item_data["diagnoser"], nexus)
 
-                # 12. Reporting
-                _log_placering(item_data)
-                if item_data.get("diagnose") == "Andet":
-                    _log_diagnoser(item_data)
-                tracker.track_task(PROCESS_NAME)
+                # # 12. Reporting
+                # _log_placering(item_data)
+                # if item_data.get("diagnose") == "Andet":
+                #     _log_diagnoser(item_data)
+                # tracker.track_task(PROCESS_NAME)
 
             except WorkItemError as e:
                 logger.error(f"Fejl ved behandling af item: {data}. Fejl: {e}")
@@ -192,7 +194,8 @@ def main():
     nexus_cred = Credential.get_credential("KMD Nexus - produktion")
     sue_cred = Credential.get_credential("Sue")
     gadefortegnelsen_cred = Credential.get_credential("Gadefortegnelsen")
-    datafordeler_cred = Credential.get_credential("Datafordeleren")
+    roboa_cred = Credential.get_credential("RoboA")
+    #datafordeler_cred = Credential.get_credential("Datafordeleren")
     tracking_cred = Credential.get_credential("Odense SQL Server")
 
     # Initialize clients
@@ -203,8 +206,10 @@ def main():
     )
 
     datafordeler = Datafordeler(
-        certifikat_sti=datafordeler_cred.data["certifikat_sti"],
-        certifikat_nøglefil=datafordeler_cred.data["certifikat_nøglefil"],
+#        certifikat_sti=datafordeler_cred.data["certifikat_sti"],
+#        certifikat_nøglefil=datafordeler_cred.data["certifikat_nøglefil"],
+        certifikat_sti="certifikater/datafordeler.crt",
+        certifikat_nøglefil="certifikater/datafordeler.key",
     )
 
     tracker = Tracker(tracking_cred.username, tracking_cred.password)
@@ -220,6 +225,9 @@ def main():
             SueClient(sue_cred.username, sue_cred.password) as sue,
             Gadefortegnelsen(
                 password=gadefortegnelsen_cred.password,
+                ntlm_username=roboa_cred.username,
+                ntlm_password=roboa_cred.password,
+                verify=False, # Our internal SSL is broken
             ) as gadefortegnelsen,
         ):
             await process_workqueue(

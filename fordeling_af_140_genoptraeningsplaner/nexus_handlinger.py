@@ -141,8 +141,10 @@ def opret_indsatser(
         )
 
     # Check existing active interventions to avoid duplicates
+    visning = nexus.borgere.hent_visning(borger) or {}
+    referencer = nexus.borgere.hent_referencer(visning)
     indsatsreferencer = nexus.indsatser.filtrer_indsats_referencer(
-        nexus.indsatser.hent_indsats_elementer(borger),
+        referencer,
         kun_aktive=True,
     )
 
@@ -176,7 +178,7 @@ def afslut_ggop(
     borger: dict,
     besked_id: int,
     placering: str,
-    gop_dato: str,
+    gop_dato: date,
     nexus: NexusClientManager,
 ) -> None:
     """Assign message to MedCom pathway, create task, accept message."""
@@ -189,7 +191,7 @@ def afslut_ggop(
     besked_ref = next((b for b in beskeder if b.get("id") == besked_id), None)
     if besked_ref is None:
         raise ValueError(f"MedCom besked {besked_id} ikke fundet")
-    besked = nexus.medcom.hent_besked(besked_ref)
+    besked = nexus.medcom.hent_besked(besked_ref) or {}
 
     # Assign message to MedCom pathway
     if medcom_forløb is not None:
@@ -197,20 +199,15 @@ def afslut_ggop(
 
     # Create task (skip for Lysningen Træning)
     if placering != "Lysningen Træning":
-        from dateutil.parser import parse as parse_date
 
-        try:
-            start_dato = parse_date(str(gop_dato)).date()
-        except (ValueError, TypeError):
-            start_dato = date.today()
 
         nexus.opgaver.opret_opgave(
             objekt=besked,
             opgave_type="Venter på planlægning § 140",
             titel="Behandlet af Tyra",
             ansvarlig_organisation=placering,
-            start_dato=start_dato,
-            forfald_dato=start_dato + timedelta(days=7),
+            start_dato=gop_dato,
+            forfald_dato=gop_dato + timedelta(days=7),
         )
 
     # Accept the message
@@ -265,7 +262,7 @@ def _har_aktivt_diagnoseskema(
             continue
 
         try:
-            skema = nexus.skemaer.hent_skema_fra_reference(ref)
+            skema = nexus.hent_fra_reference(ref)
             diagnose_value = nexus.skemaer.get_field_value(skema, "Diagnose")
             if diagnose_value == kode:
                 return True

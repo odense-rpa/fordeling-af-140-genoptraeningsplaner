@@ -1,0 +1,21 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug main.py with --excel-file",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/main.py",
+      "args": ["--excel-file", "./diagnosekoder.xlsx"],
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Debug main.py with --excel-file and --queue",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/main.py",
+      "args": ["--excel-file", "./diagnosekoder.xlsx", "--queue"],
+      "console": "integratedTerminal"
+    }
+  ]
+}

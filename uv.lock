@@ -417,8 +417,8 @@ wheels = [
 
 [[package]]
 name = "medcom-beskeder"
-version = "0.1.0"
-source = { git = "https://github.com/odense-rpa/medcom-beskeder.git#a8037d9373ad721de339efb742779f577ca3c275" }
+version = "0.2.0"
+source = { git = "https://github.com/odense-rpa/medcom-beskeder.git#2b0b9ee8713f2e0e13bc787c625c3392fa9c350f" }
 dependencies = [
     { name = "lxml" },
 ]
