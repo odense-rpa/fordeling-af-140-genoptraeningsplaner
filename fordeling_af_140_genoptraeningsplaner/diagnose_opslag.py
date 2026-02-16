@@ -19,10 +19,6 @@ def indlæs_diagnosekoder(excel_path: str) -> list[dict]:
     if not rows:
         return []
 
-    # The sheet is transposed: each row is (Name, Value)
-    # Name = diagnosis category, Value = search text
-    
-
     kategorier = []
 
     for kategori in rows[0]:
@@ -42,16 +38,6 @@ def indlæs_diagnosekoder(excel_path: str) -> list[dict]:
                             "Sogetekst": str(value).strip().lower(),
                         }
                     )
-        # name = str(row[0]).strip() if row[0] else ""
-        # value = str(row[1]).strip() if row[1] else ""
-        # if name and value:
-        #     diagnosekoder.append(
-        #         {
-        #             "Diagnose": name,
-        #             "Sogetekst": value.lower(),
-        #             "Laengde": len(value),
-        #         }
-        #     )
 
     diagnosekoder.sort(key=lambda d: len(d["Sogetekst"]), reverse=True)
     return diagnosekoder

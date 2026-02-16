@@ -199,8 +199,6 @@ def afslut_ggop(
 
     # Create task (skip for Lysningen Træning)
     if placering != "Lysningen Træning":
-
-
         nexus.opgaver.opret_opgave(
             objekt=besked,
             opgave_type="Venter på planlægning § 140",
@@ -237,12 +235,16 @@ def opret_diagnoseskemaer(
             logger.info(f"Aktivt diagnoseskema for {kode} eksisterer allerede")
             continue
 
-        nexus.skemaer.opret_komplet_skema(
-            borger=borger,
-            skematype_navn="Diagnose ICD-10",
-            handling_navn="Aktivt",
-            data={"Diagnose": kode},
-        )
+        try:
+            nexus.skemaer.opret_komplet_skema(
+                borger=borger,
+                skematype_navn="Diagnose ICD-10",
+                handling_navn="Aktivt",
+                data={"Diagnose": kode},
+            )
+        except Exception as e:
+            logger.error(f"Fejl ved oprettelse af diagnoseskema for {kode}: {e}")
+            continue
 
 
 def _har_aktivt_diagnoseskema(

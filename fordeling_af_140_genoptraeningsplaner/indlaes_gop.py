@@ -1,7 +1,6 @@
 """GOP message parsing: fetch MedCom message, classify diagnosis, calculate age."""
 
-from datetime import date
-
+from datetime import date, datetime
 from kmd_nexus_client import NexusClientManager
 from medcom_beskeder import MedcomBesked
 
@@ -38,7 +37,9 @@ def indlæs_gop(
         raise ValueError(f"MedCom besked med id {besked_id} ikke fundet")
 
     # 2. Fetch full message and decode XML
-    besked = nexus.medcom.hent_besked(besked_ref) or {} # Rettede her til default tom dict for at undgå NoneType fejl senere
+    besked = (
+        nexus.medcom.hent_besked(besked_ref) or {}
+    )  # Rettede her til default tom dict for at undgå NoneType fejl senere
     xml = nexus.medcom.dekoder_medcom_xml(besked)
     if xml is None:
         raise ValueError(f"Kunne ikke dekode MedCom XML for besked {besked_id}")
@@ -85,7 +86,9 @@ def indlæs_gop(
 
     return {
         "besked": besked,
-        "gop_dato": besked.get("date", ""),
+        "gop_dato": datetime.fromisoformat(besked.get("date", ""))
+        if besked.get("date")
+        else date.today(),
         "gop_type": gop_type,
         "diagnoser": diagnoser,
         "diagnose": diagnose,
