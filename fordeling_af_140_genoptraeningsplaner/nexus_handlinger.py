@@ -183,6 +183,17 @@ def opret_indsatser(
         )
 
 
+def sæt_ggop_niveau(
+    borger: dict, besked_id: int, niveau: str, nexus: NexusClientManager
+) -> None:
+    beskeder = nexus.medcom.hent_alle_beskeder(borger)
+    besked_ref = next((b for b in beskeder if b.get("id") == besked_id), None)
+    if besked_ref is None:
+        raise ValueError(f"MedCom besked {besked_id} ikke fundet")
+
+    nexus.medcom.opdater_niveau(besked_ref, niveau)
+
+
 def afslut_ggop(
     borger: dict,
     besked_id: int,

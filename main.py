@@ -29,6 +29,7 @@ from fordeling_af_140_genoptraeningsplaner.nexus_handlinger import (
     opret_henvisningsskema,
     opret_forløb,
     opret_indsatser,
+    sæt_ggop_niveau,
     tilføj_organisation,
 )
 from fordeling_af_140_genoptraeningsplaner.placering import beslut_placering
@@ -136,6 +137,8 @@ async def process_workqueue(
                         nexus,
                     )
 
+                    sæt_ggop_niveau(borger, data["Id"], "BASIC", nexus)
+
                     # 11. Create diagnosis schemas
                     opret_diagnoseskemaer(borger, item_data["diagnoser"], nexus)
 
@@ -144,6 +147,8 @@ async def process_workqueue(
                     if item_data.get("diagnose") == "Andet":
                         _log_diagnoser(item_data)
                     tracker.track_task(PROCESS_NAME)
+                else:
+                    sæt_ggop_niveau(borger, data["Id"], "ADVANCED", nexus)
 
             except WorkItemError as e:
                 logger.error(f"Fejl ved behandling af item: {data}. Fejl: {e}")
