@@ -203,7 +203,6 @@ def main():
     sue_cred = Credential.get_credential("Sue")
     gadefortegnelsen_cred = Credential.get_credential("Gadefortegnelsen")
     roboa_cred = Credential.get_credential("RoboA")
-    # datafordeler_cred = Credential.get_credential("Datafordeleren")
     tracking_cred = Credential.get_credential("Odense SQL Server")
 
     # Initialize clients
@@ -214,10 +213,10 @@ def main():
     )
 
     datafordeler = Datafordeler(
-        #        certifikat_sti=datafordeler_cred.data["certifikat_sti"],
-        #        certifikat_nøglefil=datafordeler_cred.data["certifikat_nøglefil"],
-        certifikat_sti="certifikater/datafordeler.crt",
-        certifikat_nøglefil="certifikater/datafordeler.key",
+        certifikat_sti="/certifikater/datafordeler.crt",
+        certifikat_nøglefil="/certifikater/datafordeler.key",
+        # certifikat_sti="certifikater/datafordeler.crt",
+        # certifikat_nøglefil="certifikater/datafordeler.key",
     )
 
     tracker = Tracker(tracking_cred.username, tracking_cred.password)
