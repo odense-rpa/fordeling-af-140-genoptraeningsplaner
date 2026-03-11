@@ -26,6 +26,7 @@ from fordeling_af_140_genoptraeningsplaner.nexus_handlinger import (
     afslut_ggop,
     hent_oplysninger_fra_nexus,
     opret_diagnoseskemaer,
+    opret_henvisningsskema,
     opret_forløb,
     opret_indsatser,
     tilføj_organisation,
@@ -123,7 +124,10 @@ async def process_workqueue(
                         nexus,
                     )
 
-                    # 10. Finalize GGOP
+                    # 10. Opret henvisningsskema
+                    opret_henvisningsskema(borger, item_data.get("gop_dato", ""), nexus)
+
+                    # 11. Finalize GGOP
                     afslut_ggop(
                         borger,
                         data["Id"],
@@ -170,7 +174,7 @@ def _log_diagnoser(item_data: dict):
             PROCESS_ID,
             "Diagnoser",
             {
-                "Dato": item_data.get("gop_dato", str(date.today())),
+                "Dato": str(item_data.get("gop_dato", date.today())),
                 "Cpr": item_data.get("Cpr", ""),
                 "Kode": diag.get("Kode", ""),
                 "Type": diag.get("Type", ""),

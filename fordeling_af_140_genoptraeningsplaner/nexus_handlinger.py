@@ -65,8 +65,11 @@ def opret_forløb(borger: dict, nexus: NexusClientManager) -> None:
     Only called for 'almen' GOP type.
     """
     forløb_liste = [
-        ("Sundhedsfagligt grundforløb", "FSIII"),
-        ("Sundhedsfagligt grundforløb", "Korrespondance - Genoptræningsplan SUL §140"),
+        (
+            "Ældre og sundhedsfagligt grundforløb",
+            "Sag SOFF: Genoptræning og fysioterapi efter sundhedsloven",
+        ),
+        #        ("Sundhedsfagligt grundforløb", "Korrespondance - Genoptræningsplan SUL §140"),
         ("MedCom", None),
     ]
 
@@ -114,9 +117,15 @@ def opret_indsatser(
     """Create interventions: 'Kroppens funktioner' + basal/avanceret grant."""
     indsatser_at_oprette = [
         {
-            "indsats": "Kroppens funktioner SUL § 140",
-            "forløb": "FSIII",
-            "grundforløb": "Sundhedsfagligt grundforløb",
+            "indsats": "Terapeutfaglig udredning SUL § 140",
+            "forløb": "Sag SOFF: Genoptræning og fysioterapi efter sundhedsloven",
+            "grundforløb": "Ældre og sundhedsfagligt grundforløb",
+            "oprettelsesform": "Tildel, Bestil",
+        },
+        {
+            "indsats": "Genoptræning fysisk SUL § 140",
+            "forløb": "Sag SOFF: Genoptræning og fysioterapi efter sundhedsloven",
+            "grundforløb": "Ældre og sundhedsfagligt grundforløb",
             "oprettelsesform": "Tildel, Bestil",
         },
     ]
@@ -125,8 +134,8 @@ def opret_indsatser(
         indsatser_at_oprette.append(
             {
                 "indsats": "Genoptræning basal genoptræning (SUL § 140)",
-                "forløb": "FSIII",
-                "grundforløb": "Sundhedsfagligt grundforløb",
+                "forløb": "Sag SOFF: Genoptræning og fysioterapi efter sundhedsloven",
+                "grundforløb": "Ældre og sundhedsfagligt grundforløb",
                 "oprettelsesform": "Tildel, Bestil",
             }
         )
@@ -134,8 +143,8 @@ def opret_indsatser(
         indsatser_at_oprette.append(
             {
                 "indsats": "Genoptræning avanceret genoptræning (SUL § 140)",
-                "forløb": "FSIII",
-                "grundforløb": "Sundhedsfagligt grundforløb",
+                "forløb": "Sag SOFF: Genoptræning og fysioterapi efter sundhedsloven",
+                "grundforløb": "Ældre og sundhedsfagligt grundforløb",
                 "oprettelsesform": "Tildel, Bestil",
             }
         )
@@ -184,7 +193,15 @@ def afslut_ggop(
     """Assign message to MedCom pathway, create task, accept message."""
     # Find MedCom forløb
     forløb_liste = nexus.borgere.hent_aktive_forløb(borger)
-    medcom_forløb = next((f for f in forløb_liste if f.get("name") == "MedCom"), None)
+    sagsforløb = next(
+        (
+            f
+            for f in forløb_liste
+            if f.get("name")
+            == "Sag SOFF: Genoptræning og fysioterapi efter sundhedsloven"
+        ),
+        None,
+    )
 
     # Fetch the message again by ID
     beskeder = nexus.medcom.hent_alle_beskeder(borger)
@@ -194,8 +211,10 @@ def afslut_ggop(
     besked = nexus.medcom.hent_besked(besked_ref) or {}
 
     # Assign message to MedCom pathway
-    if medcom_forløb is not None:
-        nexus.medcom.tildel_til_forloeb_ved_navn(besked, "MedCom")
+    if sagsforløb is not None:
+        nexus.medcom.tildel_til_forloeb_ved_navn(
+            besked, "Sag SOFF: Genoptræning og fysioterapi efter sundhedsloven"
+        )
 
     # Create task (skip for Lysningen Træning)
     if placering != "Lysningen Træning":
@@ -216,6 +235,27 @@ def afslut_ggop(
             logger.warning(f"Accepter besked fejlede (ignorerer): {e}")
         else:
             raise
+
+
+def opret_henvisningsskema(
+    borger: dict, gop_dato: date, nexus: NexusClientManager
+) -> None:
+
+    skema = nexus.skemaer.opret_komplet_skema(
+        borger=borger,
+        skematype_navn="Henvisning - Genoptræning efter sundhedsloven med indberetning",
+        handling_navn="Kladde",
+        data={
+            "Henvisningskilde": "Andre",
+            "Henvisning/Genoptræningsplan modtaget": gop_dato,
+        },
+        grundforløb="Ældre og sundhedsfagligt grundforløb",
+        forløb="Sag SOFF: Genoptræning og fysioterapi efter sundhedsloven",
+    )
+
+    if not skema:
+        logger.error("Fejl ved oprettelse af henvisningsskema")
+        return
 
 
 def opret_diagnoseskemaer(
