@@ -137,7 +137,10 @@ async def process_workqueue(
                         nexus,
                     )
 
-                    sæt_ggop_niveau(borger, data["Id"], "BASIC", nexus)
+                    if item_data["behandlingsform"] == "basal":
+                        sæt_ggop_niveau(borger, item_data["Id"], "BASIC", nexus)
+                    else:
+                        sæt_ggop_niveau(borger, item_data["Id"], "ADVANCED", nexus)
 
                     # 11. Create diagnosis schemas
                     opret_diagnoseskemaer(borger, item_data["diagnoser"], nexus)
@@ -147,8 +150,6 @@ async def process_workqueue(
                     if item_data.get("diagnose") == "Andet":
                         _log_diagnoser(item_data)
                     tracker.track_task(PROCESS_NAME)
-                else:
-                    sæt_ggop_niveau(borger, data["Id"], "ADVANCED", nexus)
 
             except WorkItemError as e:
                 logger.error(f"Fejl ved behandling af item: {data}. Fejl: {e}")
