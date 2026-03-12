@@ -137,7 +137,7 @@ async def process_workqueue(
                         nexus,
                     )
 
-                    if item_data["behandlingsform"] == "basal":
+                    if item_data["behandlingsform"] == "Basal":
                         sæt_ggop_niveau(borger, item_data["Id"], "BASIC", nexus)
                     else:
                         sæt_ggop_niveau(borger, item_data["Id"], "ADVANCED", nexus)

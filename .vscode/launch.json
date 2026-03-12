@@ -6,15 +6,23 @@
       "type": "debugpy",
       "request": "launch",
       "program": "${workspaceFolder}/main.py",
-      "args": ["--excel-file", "./diagnosekoder.xlsx"],
-      "console": "integratedTerminal"
+      "args": [
+        "--excel-file",
+        "./diagnosekoder.xlsx"
+      ],
+      "console": "integratedTerminal",
+      "justMyCode": false
     },
     {
       "name": "Debug main.py with --excel-file and --queue",
       "type": "debugpy",
       "request": "launch",
       "program": "${workspaceFolder}/main.py",
-      "args": ["--excel-file", "./diagnosekoder.xlsx", "--queue"],
+      "args": [
+        "--excel-file",
+        "./diagnosekoder.xlsx",
+        "--queue"
+      ],
       "console": "integratedTerminal"
     }
   ]
