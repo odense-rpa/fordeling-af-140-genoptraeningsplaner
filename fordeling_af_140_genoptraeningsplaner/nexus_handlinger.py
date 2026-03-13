@@ -224,7 +224,9 @@ def afslut_ggop(
     # Assign message to MedCom pathway
     if sagsforløb is not None:
         nexus.medcom.tildel_til_forloeb_ved_navn(
-            besked, "Sag SOFF: Genoptræning og fysioterapi efter sundhedsloven"
+            besked,
+            grundforloeb_navn="Ældre og sundhedsfagligt grundforløb",
+            forloeb_navn="Sag SOFF: Genoptræning og fysioterapi efter sundhedsloven",
         )
 
     # Create task (skip for Lysningen Træning)
