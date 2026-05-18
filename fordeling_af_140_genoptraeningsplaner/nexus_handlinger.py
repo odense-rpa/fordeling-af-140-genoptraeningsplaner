@@ -46,7 +46,11 @@ async def hent_oplysninger_fra_nexus(
             break
 
     # 2. Look up address area via Gadefortegnelsen
-    lokation = await gadefortegnelsen.hent_borger(cpr)
+    try:
+        lokation = await gadefortegnelsen.hent_borger(cpr)
+    except Exception as e:
+        raise ValueError(f"Fejl ved hentning af adresse fra Gadefortegnelsen: {e}")
+
     adresse = bestem_adresse_område(lokation)
 
     # 3. Check if citizen lives at Lysningen

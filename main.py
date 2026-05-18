@@ -154,6 +154,8 @@ async def process_workqueue(
             except WorkItemError as e:
                 logger.error(f"Fejl ved behandling af item: {data}. Fejl: {e}")
                 item.fail(str(e))
+            except ValueError as e:
+                logger.warning(str(e))
 
 
 def _log_placering(item_data: dict):
