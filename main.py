@@ -218,6 +218,7 @@ def main():
         instance=nexus_cred.data["instance"],
         client_id=nexus_cred.username,
         client_secret=nexus_cred.password,
+        timeout=120,
     )
 
     datafordeler = Datafordeler(
