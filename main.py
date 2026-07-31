@@ -44,7 +44,7 @@ async def populate_queue(workqueue: Workqueue, nexus: NexusClientManager):
 
     """Fetch MedCom GOP activity list and add items to queue."""
     aktiviteter = nexus.aktivitetslister.hent_aktivitetsliste(
-        "MedCom - Genoptræningsplaner", None, None, 5
+        "MedCom - Genoptræningsplaner", None, None, 15
     )
 
     if not aktiviteter:
@@ -222,10 +222,10 @@ def main():
     )
 
     datafordeler = Datafordeler(
-        certifikat_sti="/certifikater/datafordeler.crt",
-        certifikat_nøglefil="/certifikater/datafordeler.key",
-        # certifikat_sti="certifikater/datafordeler.crt",
-        # certifikat_nøglefil="certifikater/datafordeler.key",
+        # certifikat_sti="/certifikater/datafordeler.crt",
+        # certifikat_nøglefil="/certifikater/datafordeler.key",
+        certifikat_sti="certifikater/datafordeler.crt",
+        certifikat_nøglefil="certifikater/datafordeler.key",
     )
 
     tracker = Tracker(tracking_cred.username, tracking_cred.password)
