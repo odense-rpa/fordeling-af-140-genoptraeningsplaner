@@ -36,5 +36,5 @@ datafordeler = { git = "https://github.com/odense-rpa/datafordeler.git" }
 medcom-beskeder = { git = "https://github.com/odense-rpa/medcom-beskeder.git" }
 odk-tools = { git = "https://github.com/odense-rpa/odk-tools.git" }
 automation-server-client = { git = "https://github.com/odense-rpa/automation-server-client.git" }
-kmd-nexus-client = { git = "https://github.com/odense-rpa/nexus-client.git", rev = "a93da4866c98bc6e8605989359b2db69f8bb5bdb" }
+kmd-nexus-client = { git = "https://github.com/odense-rpa/nexus-client.git", rev = "c9f7d054db3fbdc42441dcf8fe8ff3247ab2f174" }
 sue = { git = "https://github.com/odense-rpa/sue.git" }
