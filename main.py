@@ -222,10 +222,10 @@ def main():
     )
 
     datafordeler = Datafordeler(
-        certifikat_sti="/certifikater/datafordeler.crt",
-        certifikat_nøglefil="/certifikater/datafordeler.key",
-        # certifikat_sti="certifikater/datafordeler.crt",
-        # certifikat_nøglefil="certifikater/datafordeler.key",
+        # certifikat_sti="/certifikater/datafordeler.crt",
+        # certifikat_nøglefil="/certifikater/datafordeler.key",
+        certifikat_sti="certifikater/datafordeler.crt",
+        certifikat_nøglefil="certifikater/datafordeler.key",
     )
 
     tracker = Tracker(tracking_cred.username, tracking_cred.password)
