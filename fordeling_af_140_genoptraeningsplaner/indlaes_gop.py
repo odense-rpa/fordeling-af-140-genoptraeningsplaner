@@ -136,8 +136,8 @@ def beregn_alder(cpr: str) -> int:
 
 
 def bestem_aldersgruppe(alder: int) -> str:
-    """Classify age into group string matching Sue model categories."""
-    if alder < 67:
+    """Classify age into group string matching Sue model categories. 65 er det nye 67 - aftalt med Gunhild"""
+    if alder < 65:
         return "< 67"
     elif alder <= 74:
         return "67 - 74"
