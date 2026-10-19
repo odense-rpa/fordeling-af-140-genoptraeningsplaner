@@ -12,7 +12,7 @@ from automation_server_client import (
     WorkItemStatus,
     Workqueue,
 )
-from datafordeler import Datafordeler
+from datafordeler import DatafordelerGraphQL
 from gadefortegnelsen import Gadefortegnelsen
 from kmd_nexus_client import NexusClientManager
 from odk_tools.reporting import report
@@ -76,7 +76,7 @@ async def process_workqueue(
     nexus: NexusClientManager,
     sue: SueClient,
     gadefortegnelsen: Gadefortegnelsen,
-    datafordeler: Datafordeler,
+    datafordeler: DatafordelerGraphQL,
     diagnosekoder: list[dict],
     tracker: Tracker,
 ):
@@ -212,6 +212,7 @@ def main():
     gadefortegnelsen_cred = Credential.get_credential("Gadefortegnelsen")
     roboa_cred = Credential.get_credential("RoboA")
     tracking_cred = Credential.get_credential("Odense SQL Server")
+    datafordeler_cred = Credential.get_credential("Datafordeler")
 
     # Initialize clients
     nexus = NexusClientManager(
@@ -221,11 +222,9 @@ def main():
         timeout=120,
     )
 
-    datafordeler = Datafordeler(
-        certifikat_sti="/certifikater/datafordeler.crt",
-        certifikat_nøglefil="/certifikater/datafordeler.key",
-        # certifikat_sti="certifikater/datafordeler.crt",
-        # certifikat_nøglefil="certifikater/datafordeler.key",
+    datafordeler = DatafordelerGraphQL(
+        client_id=datafordeler_cred.username,
+        client_secret=datafordeler_cred.password,
     )
 
     tracker = Tracker(tracking_cred.username, tracking_cred.password)
