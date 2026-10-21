@@ -1,14 +1,14 @@
 """Citizen loading: municipality verification, Nexus fetch, draft activation."""
 
 from automation_server_client import WorkItemError
-from datafordeler import Datafordeler
+from datafordeler import DatafordelerGraphQL
 from kmd_nexus_client import NexusClientManager
 
 
 def indlæs_borger(
     cpr: str,
     nexus: NexusClientManager,
-    datafordeler: Datafordeler,
+    datafordeler: DatafordelerGraphQL,
 ) -> dict:
     """Load citizen: verify Odense municipality, fetch from Nexus, activate if draft.
 
@@ -16,16 +16,8 @@ def indlæs_borger(
     cannot be activated from draft status.
     """
     # 1. Verify citizen lives in Odense (kommunekode 461)
-    adresse = datafordeler.hent_aktiv_adresse(cpr)
-    kommunekode = (
-        adresse.get("Adresseoplysninger", {})
-        .get("CprAdresse", {})
-        .get("cprKommunekode", "")
-    )
-    try:
-        if int(kommunekode) != 461:
-            raise WorkItemError("Borgeren bor ikke i Odense kommune")
-    except (ValueError, TypeError):
+    adresse = datafordeler.hent_person(cpr).adresse
+    if adresse is None or not adresse.bor_i_kommune("461"):
         raise WorkItemError("Borgeren bor ikke i Odense kommune")
 
     # 2. Fetch citizen from Nexus
